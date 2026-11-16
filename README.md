@@ -66,6 +66,6 @@ python .\GenshinGuideAI\tools\run_live_smoke.py --bettergi D:\Apps\GenshinGuideA
 
 ## 许可证与历史材料
 
-BetterGI 源码依照其 [GPL-3.0 许可证](BetterGI/LICENSE) 提供。各第三方组件保留原许可；本仓库没有将第三方代码重新授权为自有代码。GuideAI 来自用户提供的产品包及本项目后续开发，当前为私有开发快照，没有新增覆盖全仓库的许可证。
+BetterGI 源码依照其 [GPL-3.0 许可证](BetterGI/LICENSE) 提供。各第三方组件保留原许可；本仓库没有将第三方代码重新授权为自有代码。GuideAI 来自用户提供的产品包及本项目后续开发，当前为公开的开发快照，没有新增覆盖全仓库的许可证。
 
 `GenshinGuideAI/docs/reports/` 和子项目 README 包含原产品包的历史材料；部分截图与外部运行产物不随本次发布。当前状态以本页和 `docs/VALIDATION.md` 为准，历史沙盘演示和模拟执行结果不能作为真实游戏通过的证明。
