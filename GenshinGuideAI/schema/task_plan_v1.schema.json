@@ -1,0 +1,315 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+    },
+    "catalog_version": {
+      "const": "1.0.0"
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "const": "plan_only"
+    },
+    "execution_allowed": {
+      "const": false
+    },
+    "status": {
+      "const": "needs_review"
+    },
+    "analysis_run_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,64}$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "action_id": {
+            "enum": [
+              "teleport",
+              "move_to",
+              "sprint",
+              "climb",
+              "interact",
+              "dialogue_choice",
+              "fight",
+              "wait",
+              "unknown"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "intent": {
+            "type": "string",
+            "minLength": 1
+          },
+          "params": {
+            "type": "object"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            },
+            "uniqueItems": true
+          },
+          "source_event_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "preconditions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "enum": [
+                    "input.focused",
+                    "frame.fresh",
+                    "ui.main",
+                    "waypoint.unlocked",
+                    "position.arrived",
+                    "route.valid",
+                    "stamina.enough",
+                    "climb.reachable",
+                    "target.unique",
+                    "interaction.changed",
+                    "dialogue.option_unique",
+                    "dialogue.advanced",
+                    "combat.configured",
+                    "combat.finished",
+                    "wait.condition",
+                    "unsupported"
+                  ]
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "status": {
+                  "const": "not_checked"
+                }
+              },
+              "required": [
+                "id",
+                "description",
+                "status"
+              ]
+            },
+            "minItems": 1
+          },
+          "expected_result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "checks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "enum": [
+                        "input.focused",
+                        "frame.fresh",
+                        "ui.main",
+                        "waypoint.unlocked",
+                        "position.arrived",
+                        "route.valid",
+                        "stamina.enough",
+                        "climb.reachable",
+                        "target.unique",
+                        "interaction.changed",
+                        "dialogue.option_unique",
+                        "dialogue.advanced",
+                        "combat.configured",
+                        "combat.finished",
+                        "wait.condition",
+                        "unsupported"
+                      ]
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "status": {
+                      "const": "not_checked"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "description",
+                    "status"
+                  ]
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "text",
+              "checks"
+            ]
+          },
+          "observed_result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "status": {
+                "const": "not_executed"
+              },
+              "evidence_ids": {
+                "const": []
+              }
+            },
+            "required": [
+              "status",
+              "evidence_ids"
+            ]
+          },
+          "status": {
+            "enum": [
+              "blocked",
+              "needs_review"
+            ]
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "detail": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "code",
+                "detail"
+              ]
+            }
+          },
+          "uncertainties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "timeout_s": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "max_retries": {
+            "const": 0
+          },
+          "review": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "status": {
+                "const": "pending"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "action_id",
+          "title",
+          "intent",
+          "params",
+          "depends_on",
+          "source_event_ids",
+          "evidence_ids",
+          "preconditions",
+          "expected_result",
+          "observed_result",
+          "status",
+          "blockers",
+          "uncertainties",
+          "confidence",
+          "timeout_s",
+          "max_retries",
+          "review"
+        ]
+      },
+      "minItems": 1
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "confidence_note": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "id",
+    "catalog_version",
+    "goal",
+    "mode",
+    "execution_allowed",
+    "status",
+    "analysis_run_ids",
+    "steps",
+    "uncertainties",
+    "confidence_note"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

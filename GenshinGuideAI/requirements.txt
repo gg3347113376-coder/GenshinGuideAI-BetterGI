@@ -1,0 +1,10 @@
+# 核心（协议校验 + 存储）
+jsonschema>=4.18
+
+# 方向一流水线（P2 阶段安装）
+# av>=12
+# opencv-python-headless>=4.9
+# numpy>=1.26
+# faster-whisper>=1.0
+# paddleocr>=2.7        # 或改用 Umi-OCR 的 HTTP API
+# rapidocr-onnxruntime  # 轻量替代方案

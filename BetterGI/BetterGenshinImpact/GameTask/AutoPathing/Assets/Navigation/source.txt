@@ -1,0 +1,10 @@
+蒙德导航数据
+来源：https://github.com/flatypus/hoyomap
+源码提交：9ee2acd95981bf9cc201aef86632f05bb8449816
+原模型：game_data/hlod_all/Area_Mengde_City_Constant_HLOD_Lod0.obj
+模型未修改；程序按 manifest 的 position=(2275,263,-783) 转换到 BetterGI 平面坐标。
+游戏地图坐标=(OBJ.z-783, 2275-OBJ.x)，高度=OBJ.y+263。
+仅使用城区模型；周边水面、复杂攀爬和上下重叠通路不在此版支持范围。
+HLOD 是用于显示的简化模型，不等于游戏物理碰撞数据。道路实际通过情况须实机验证。
+寻路库：DotRecast.Recast / DotRecast.Detour 2026.3.1，Zlib license。
+上游：https://github.com/ikpil/DotRecast

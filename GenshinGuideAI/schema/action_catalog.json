@@ -1,0 +1,592 @@
+{
+  "schema_version": "1.0.0",
+  "execution_enabled": false,
+  "checks": {
+    "input.focused": "游戏窗口在前台；本阶段未检查",
+    "frame.fresh": "画面未断流，几何与窗口绑定未失效",
+    "ui.main": "处于可操作主界面",
+    "waypoint.unlocked": "目标锚点已解锁且坐标、地图层已核对",
+    "position.arrived": "新定位在指定目标半径内，地图层一致",
+    "route.valid": "路线存在，起点相符，当前地图层与路线一致",
+    "stamina.enough": "体力满足该段预算",
+    "climb.reachable": "攀爬段端点和可攀爬表面已验证",
+    "target.unique": "当前交互文字与目标唯一匹配",
+    "interaction.changed": "动作前后目标状态发生预期变化；拾取须有新增奖励证据",
+    "dialogue.option_unique": "选项文字在当前对话中唯一匹配",
+    "dialogue.advanced": "出现预期下一段对话或任务状态变化",
+    "combat.configured": "战斗策略与当前队伍已适配",
+    "combat.finished": "新画面验证敌人消失和战斗结束，不能仅按调用返回判断",
+    "wait.condition": "新画面验证等待条件满足",
+    "unsupported": "缺少已实现动作，等待人工拆解"
+  },
+  "actions": [
+    {
+      "id": "teleport",
+      "name": "锚点传送",
+      "legacy_event_type": "teleport",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "map_x": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "map_y": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "layer": {
+            "enum": [
+              "surface",
+              "underground",
+              "cave",
+              "interior",
+              "instance",
+              "unknown"
+            ]
+          },
+          "coordinate_system": {
+            "enum": [
+              "BetterGI_Teyvat",
+              "unknown"
+            ]
+          }
+        },
+        "required": [
+          "target_label",
+          "map_x",
+          "map_y",
+          "layer",
+          "coordinate_system"
+        ]
+      },
+      "required_for_execution": [
+        "map_x",
+        "map_y",
+        "layer",
+        "coordinate_system"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "waypoint.unlocked"
+      ],
+      "postconditions": [
+        "position.arrived"
+      ],
+      "timeout_s": 60,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": "GuideWorkbench/natlan_live_runner.js",
+        "symbol": "genshin.tp",
+        "status": "source_present",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "第一阶段仅生成与校验计划，未接执行器"
+    },
+    {
+      "id": "move_to",
+      "name": "沿可用路线前往目标",
+      "legacy_event_type": "move",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "map_x": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "map_y": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "layer": {
+            "enum": [
+              "surface",
+              "underground",
+              "cave",
+              "interior",
+              "instance",
+              "unknown"
+            ]
+          },
+          "coordinate_system": {
+            "enum": [
+              "BetterGI_Teyvat",
+              "unknown"
+            ]
+          },
+          "route_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          }
+        },
+        "required": [
+          "target_label",
+          "map_x",
+          "map_y",
+          "layer",
+          "coordinate_system",
+          "route_id"
+        ]
+      },
+      "required_for_execution": [
+        "route_id",
+        "map_x",
+        "map_y",
+        "layer",
+        "coordinate_system"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "route.valid"
+      ],
+      "postconditions": [
+        "position.arrived"
+      ],
+      "timeout_s": 120,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": "GuideWorkbench/natlan_live_runner.js",
+        "symbol": "pathingScript.runFileWithTimeout",
+        "status": "source_present",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "需要已验证路线；坐标不是可通行路网；攀爬高度尚未接入"
+    },
+    {
+      "id": "sprint",
+      "name": "路线段冲刺",
+      "legacy_event_type": "move",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "map_x": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "map_y": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "layer": {
+            "enum": [
+              "surface",
+              "underground",
+              "cave",
+              "interior",
+              "instance",
+              "unknown"
+            ]
+          },
+          "coordinate_system": {
+            "enum": [
+              "BetterGI_Teyvat",
+              "unknown"
+            ]
+          },
+          "route_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          }
+        },
+        "required": [
+          "target_label",
+          "map_x",
+          "map_y",
+          "layer",
+          "coordinate_system",
+          "route_id"
+        ]
+      },
+      "required_for_execution": [
+        "route_id",
+        "map_x",
+        "map_y",
+        "layer",
+        "coordinate_system"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "route.valid",
+        "stamina.enough"
+      ],
+      "postconditions": [
+        "position.arrived"
+      ],
+      "timeout_s": 60,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": "BetterGI/BetterGenshinImpact/GameTask/AutoPathing/PathExecutor.cs",
+        "symbol": "MoveModeEnum.Run.Code",
+        "status": "source_present",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "需要已验证路线；坐标不是可通行路网；攀爬高度尚未接入"
+    },
+    {
+      "id": "climb",
+      "name": "路线段攀爬",
+      "legacy_event_type": "climb",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "map_x": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "map_y": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "layer": {
+            "enum": [
+              "surface",
+              "underground",
+              "cave",
+              "interior",
+              "instance",
+              "unknown"
+            ]
+          },
+          "coordinate_system": {
+            "enum": [
+              "BetterGI_Teyvat",
+              "unknown"
+            ]
+          },
+          "route_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          }
+        },
+        "required": [
+          "target_label",
+          "map_x",
+          "map_y",
+          "layer",
+          "coordinate_system",
+          "route_id"
+        ]
+      },
+      "required_for_execution": [
+        "route_id",
+        "map_x",
+        "map_y",
+        "layer",
+        "coordinate_system"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "route.valid",
+        "stamina.enough",
+        "climb.reachable"
+      ],
+      "postconditions": [
+        "position.arrived"
+      ],
+      "timeout_s": 90,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": "BetterGI/BetterGenshinImpact/GameTask/AutoPathing/PathExecutor.cs",
+        "symbol": "MoveModeEnum.Climb.Code",
+        "status": "source_present",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "需要已验证路线；坐标不是可通行路网；攀爬高度尚未接入"
+    },
+    {
+      "id": "interact",
+      "name": "交互或开启宝箱",
+      "legacy_event_type": "interact",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          }
+        },
+        "required": [
+          "target_label",
+          "target_text"
+        ]
+      },
+      "required_for_execution": [
+        "target_text"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "target.unique"
+      ],
+      "postconditions": [
+        "interaction.changed"
+      ],
+      "timeout_s": 15,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": "GuideWorkbench/natlan_live_runner.js",
+        "symbol": "textGate",
+        "status": "source_present",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "第一阶段仅生成与校验计划，未接执行器"
+    },
+    {
+      "id": "dialogue_choice",
+      "name": "选择对话选项",
+      "legacy_event_type": "dialogue_choice",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "option_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          }
+        },
+        "required": [
+          "target_label",
+          "option_text"
+        ]
+      },
+      "required_for_execution": [
+        "option_text"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "dialogue.option_unique"
+      ],
+      "postconditions": [
+        "dialogue.advanced"
+      ],
+      "timeout_s": 30,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": "GuideWorkbench/natlan_live_runner.js",
+        "symbol": "cmd.kind === \"dialogue\"",
+        "status": "source_present",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "第一阶段仅生成与校验计划，未接执行器"
+    },
+    {
+      "id": "fight",
+      "name": "执行已适配战斗策略",
+      "legacy_event_type": "fight_start",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "strategy_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          }
+        },
+        "required": [
+          "target_label",
+          "strategy_id"
+        ]
+      },
+      "required_for_execution": [
+        "strategy_id"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "combat.configured"
+      ],
+      "postconditions": [
+        "combat.finished"
+      ],
+      "timeout_s": 90,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": "GuideWorkbench/natlan_live_runner.js",
+        "symbol": "dispatcher.runAutoFightTask",
+        "status": "source_present",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "第一阶段仅生成与校验计划，未接执行器"
+    },
+    {
+      "id": "wait",
+      "name": "等待可观察条件",
+      "legacy_event_type": "wait",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "condition": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          }
+        },
+        "required": [
+          "target_label",
+          "condition"
+        ]
+      },
+      "required_for_execution": [
+        "condition"
+      ],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main"
+      ],
+      "postconditions": [
+        "wait.condition"
+      ],
+      "timeout_s": 30,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": null,
+        "symbol": null,
+        "status": "not_implemented",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "第一阶段仅生成与校验计划，未接执行器"
+    },
+    {
+      "id": "unknown",
+      "name": "待人工拆解",
+      "legacy_event_type": "unknown",
+      "parameter_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "target_label": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "target_label"
+        ]
+      },
+      "required_for_execution": [],
+      "preconditions": [
+        "input.focused",
+        "frame.fresh",
+        "ui.main",
+        "unsupported"
+      ],
+      "postconditions": [
+        "unsupported"
+      ],
+      "timeout_s": 1,
+      "max_retries": 0,
+      "failure_policy": "stop_and_require_fresh_observation",
+      "binding": {
+        "path": null,
+        "symbol": null,
+        "status": "not_implemented",
+        "adapter_status": "not_connected",
+        "live_validation": "not_verified_in_phase1"
+      },
+      "limitations": "第一阶段仅生成与校验计划，未接执行器"
+    }
+  ]
+}

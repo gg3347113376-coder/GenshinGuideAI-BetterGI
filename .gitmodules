@@ -1,0 +1,3 @@
+[submodule "BetterGI/Test/BetterGenshinImpact.UnitTest/Assets"]
+	path = BetterGI/Test/BetterGenshinImpact.UnitTest/Assets
+	url = https://github.com/huiyadanli/BetterGI.UnitTest.Assets.git

@@ -1,0 +1,36 @@
+# Generated outputs and local environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+**/bin/
+**/obj/
+**/TestResults/
+outputs/
+artifacts/
+runs/
+.cache/
+.vs/
+.idea/
+*.log
+*.zip
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local runtime state, not the upstream default User content
+**/User/config.json
+**/User/Cache/
+**/User/LiveSmoke/
+**/User/ScriptGroup/
+**/User/JsScript/
+**/log/
+**/Cache/
+GenshinGuideAI/data/videos/
+GenshinGuideAI/data/frames/
+BetterGI/BetterGenshinImpact/GameTask/AutoPathing/Assets/Navigation/*.obj

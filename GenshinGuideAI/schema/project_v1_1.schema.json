@@ -1,0 +1,1061 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://genshin-guide-ai.local/schema/project_v1_1.schema.json",
+  "title": "GenshinGuideAI evidence and task plan v1.1 (no execution)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project",
+    "sources",
+    "segments",
+    "events",
+    "evidence_index",
+    "analysis_runs",
+    "task_plan",
+    "simulation_runs",
+    "execution_runs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1.0"
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "created_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,64}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "model_versions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "OCR/ASR/VLM/规则版本，用于追溯"
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "segments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/segment"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    },
+    "evidence_index": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "source_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "kind": {
+            "enum": [
+              "frame",
+              "asr"
+            ]
+          },
+          "time": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "start_s": {
+                "type": "number",
+                "minimum": 0
+              },
+              "end_s": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "start_s",
+              "end_s"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "text": {
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "video_decode",
+              "existing_asr"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "source_id",
+          "kind",
+          "time",
+          "path",
+          "sha256",
+          "text",
+          "method"
+        ]
+      },
+      "minItems": 1
+    },
+    "analysis_runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "stage": {
+            "enum": [
+              "visual_observation",
+              "task_understanding"
+            ]
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model_digest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "request_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "request_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "response_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "response_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "elapsed_s": {
+            "type": "number",
+            "minimum": 0
+          },
+          "status": {
+            "const": "parsed"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "stage",
+          "model",
+          "model_digest",
+          "request_path",
+          "request_sha256",
+          "response_path",
+          "response_sha256",
+          "elapsed_s",
+          "status",
+          "evidence_ids"
+        ]
+      },
+      "minItems": 1
+    },
+    "task_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,64}$"
+        },
+        "catalog_version": {
+          "const": "1.0.0"
+        },
+        "goal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "const": "plan_only"
+        },
+        "execution_allowed": {
+          "const": false
+        },
+        "status": {
+          "const": "needs_review"
+        },
+        "analysis_run_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{1,64}$"
+              },
+              "action_id": {
+                "enum": [
+                  "teleport",
+                  "move_to",
+                  "sprint",
+                  "climb",
+                  "interact",
+                  "dialogue_choice",
+                  "fight",
+                  "wait",
+                  "unknown"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "intent": {
+                "type": "string",
+                "minLength": 1
+              },
+              "params": {
+                "type": "object"
+              },
+              "depends_on": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{1,64}$"
+                },
+                "uniqueItems": true
+              },
+              "source_event_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{1,64}$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{1,64}$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "preconditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "enum": [
+                        "input.focused",
+                        "frame.fresh",
+                        "ui.main",
+                        "waypoint.unlocked",
+                        "position.arrived",
+                        "route.valid",
+                        "stamina.enough",
+                        "climb.reachable",
+                        "target.unique",
+                        "interaction.changed",
+                        "dialogue.option_unique",
+                        "dialogue.advanced",
+                        "combat.configured",
+                        "combat.finished",
+                        "wait.condition",
+                        "unsupported"
+                      ]
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "status": {
+                      "const": "not_checked"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "description",
+                    "status"
+                  ]
+                },
+                "minItems": 1
+              },
+              "expected_result": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "checks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "enum": [
+                            "input.focused",
+                            "frame.fresh",
+                            "ui.main",
+                            "waypoint.unlocked",
+                            "position.arrived",
+                            "route.valid",
+                            "stamina.enough",
+                            "climb.reachable",
+                            "target.unique",
+                            "interaction.changed",
+                            "dialogue.option_unique",
+                            "dialogue.advanced",
+                            "combat.configured",
+                            "combat.finished",
+                            "wait.condition",
+                            "unsupported"
+                          ]
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "status": {
+                          "const": "not_checked"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "description",
+                        "status"
+                      ]
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "text",
+                  "checks"
+                ]
+              },
+              "observed_result": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "const": "not_executed"
+                  },
+                  "evidence_ids": {
+                    "const": []
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence_ids"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "blocked",
+                  "needs_review"
+                ]
+              },
+              "blockers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "detail": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "detail"
+                  ]
+                }
+              },
+              "uncertainties": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "timeout_s": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "max_retries": {
+                "const": 0
+              },
+              "review": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "const": "pending"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "action_id",
+              "title",
+              "intent",
+              "params",
+              "depends_on",
+              "source_event_ids",
+              "evidence_ids",
+              "preconditions",
+              "expected_result",
+              "observed_result",
+              "status",
+              "blockers",
+              "uncertainties",
+              "confidence",
+              "timeout_s",
+              "max_retries",
+              "review"
+            ]
+          },
+          "minItems": 1
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "confidence_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "catalog_version",
+        "goal",
+        "mode",
+        "execution_allowed",
+        "status",
+        "analysis_run_ids",
+        "steps",
+        "uncertainties",
+        "confidence_note"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "simulation_runs": {
+      "const": []
+    },
+    "execution_runs": {
+      "const": []
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "duration_s"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,64}$"
+        },
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "duration_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "fps": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "width": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "height": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "captured_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_id",
+        "start_s",
+        "end_s",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,64}$"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "start_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "end_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "kind": {
+          "enum": [
+            "travel",
+            "combat",
+            "interaction",
+            "dialogue",
+            "cutscene",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_id",
+        "order",
+        "video_time",
+        "action",
+        "state_status",
+        "confidence",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,64}$"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "segment_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "video_time": {
+          "$ref": "#/$defs/timeRange"
+        },
+        "game_time": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/timeRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sim_time": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/timeRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actor": {
+          "$ref": "#/$defs/actor"
+        },
+        "action": {
+          "$ref": "#/$defs/action"
+        },
+        "position": {
+          "$ref": "#/$defs/position"
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expected_result": {
+          "$ref": "#/$defs/result"
+        },
+        "observed_result": {
+          "$ref": "#/$defs/result"
+        },
+        "state_status": {
+          "enum": [
+            "observed",
+            "inferred",
+            "confirmed",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "review": {
+          "$ref": "#/$defs/review"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "timeRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_s",
+        "end_s"
+      ],
+      "properties": {
+        "start_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "end_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "precision": {
+          "enum": [
+            "frame",
+            "second",
+            "segment",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "player",
+            "npc",
+            "enemy",
+            "mechanism",
+            "unknown"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "move",
+            "teleport",
+            "climb",
+            "glide",
+            "jump",
+            "dodge",
+            "normal_attack",
+            "charged_attack",
+            "plunge_attack",
+            "skill",
+            "burst",
+            "switch_character",
+            "interact",
+            "dialogue",
+            "dialogue_choice",
+            "pick",
+            "fight_start",
+            "fight_end",
+            "wait",
+            "unknown"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "动作参数：目标坐标/角色/技能/选项文本等；未知时留空并在 evidence 说明"
+        },
+        "method": {
+          "enum": [
+            "observed",
+            "inferred",
+            "manual",
+            "unknown"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "map"
+      ],
+      "properties": {
+        "map": {
+          "$ref": "#/$defs/mapPosition"
+        },
+        "world": {
+          "$ref": "#/$defs/worldPosition"
+        }
+      }
+    },
+    "mapPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "layer",
+        "method"
+      ],
+      "properties": {
+        "x": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "y": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "layer": {
+          "enum": [
+            "surface",
+            "underground",
+            "cave",
+            "interior",
+            "instance",
+            "unknown"
+          ]
+        },
+        "region": {
+          "type": "string"
+        },
+        "anchor": {
+          "type": "string"
+        },
+        "error_m": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "method": {
+          "enum": [
+            "minimap",
+            "ocr",
+            "manual",
+            "map_data",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "worldPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method"
+      ],
+      "properties": {
+        "x": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "y": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "z": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "error_m": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "method": {
+          "enum": [
+            "minimap",
+            "manual",
+            "map_data",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "frame",
+            "ocr",
+            "asr",
+            "map",
+            "manual"
+          ]
+        },
+        "t_s": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "bbox": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "confirmed",
+            "corrected",
+            "rejected"
+          ]
+        },
+        "by": {
+          "type": "string"
+        },
+        "at": {
+          "type": "string"
+        },
+        "diff": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

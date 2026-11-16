@@ -1,0 +1,151 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "id": "proj_natlan_demo",
+    "name": "纳塔·话事处 剧情片段（协议示例）",
+    "created_at": "2026-11-06T18:30:00+08:00",
+    "description": "用于验证协议 v1 的最小样例：包含移动、交互、对话三类事件；坐标未知时如实留空。",
+    "model_versions": {
+      "ocr": "paddleocr-pending",
+      "asr": "faster-whisper-small",
+      "vlm": "qwen3-vl:4b-pending",
+      "rules": "ggai-0.1.0"
+    }
+  },
+  "sources": [
+    {
+      "id": "src_demo",
+      "path": "data/videos/sample_natlan.mp4",
+      "sha256": null,
+      "duration_s": 1440.0,
+      "fps": 30.0,
+      "width": 1920,
+      "height": 1080,
+      "captured_at": null,
+      "notes": "占位样例；真实视频接入后替换"
+    }
+  ],
+  "segments": [
+    {
+      "id": "seg_demo_1",
+      "source_id": "src_demo",
+      "start_s": 0.0,
+      "end_s": 1440.0,
+      "kind": "interaction",
+      "confidence": 0.5,
+      "notes": "样例片段"
+    }
+  ],
+  "events": [
+    {
+      "id": "evt_000001",
+      "source_id": "src_demo",
+      "segment_id": "seg_demo_1",
+      "order": 0,
+      "video_time": { "start_s": 12.0, "end_s": 20.0, "precision": "second" },
+      "game_time": null,
+      "sim_time": null,
+      "actor": { "kind": "player", "name": "旅行者", "confidence": 0.9 },
+      "action": { "type": "move", "params": {}, "method": "observed", "notes": "朝任务标记移动" },
+      "position": {
+        "map": {
+          "x": null,
+          "y": null,
+          "layer": "surface",
+          "region": "纳塔",
+          "anchor": "话事处",
+          "error_m": null,
+          "method": "unknown",
+          "confidence": 0.0
+        },
+        "world": { "x": null, "y": null, "z": null, "error_m": null, "method": "unknown", "confidence": 0.0 }
+      },
+      "preconditions": ["任务：去「话事处」见玛薇卡"],
+      "expected_result": { "text": "到达话事处门口", "checks": ["距离 <= 2m"] },
+      "observed_result": { "text": "", "checks": [] },
+      "state_status": "observed",
+      "confidence": 0.6,
+      "evidence": [
+        { "kind": "ocr", "t_s": 12.5, "path": "", "bbox": [37, 209, 222, 24], "text": "去「话事处」见玛薇卡", "note": "任务追踪" },
+        { "kind": "ocr", "t_s": 19.8, "path": "", "bbox": [72, 234, 72, 20], "text": "高处 4m", "note": "距离提示" }
+      ],
+      "review": { "status": "pending" },
+      "notes": "坐标不可得，保留为空并标 unknown"
+    },
+    {
+      "id": "evt_000002",
+      "source_id": "src_demo",
+      "segment_id": "seg_demo_1",
+      "order": 1,
+      "video_time": { "start_s": 20.0, "end_s": 24.0, "precision": "second" },
+      "game_time": null,
+      "sim_time": null,
+      "actor": { "kind": "player", "name": "旅行者", "confidence": 0.85 },
+      "action": { "type": "interact", "params": { "target": "门" }, "method": "inferred", "notes": "按 F 交互" },
+      "position": {
+        "map": {
+          "x": null,
+          "y": null,
+          "layer": "surface",
+          "region": "纳塔",
+          "anchor": "话事处",
+          "error_m": null,
+          "method": "unknown",
+          "confidence": 0.0
+        },
+        "world": { "x": null, "y": null, "z": null, "error_m": null, "method": "unknown", "confidence": 0.0 }
+      },
+      "preconditions": ["站在门口"],
+      "expected_result": { "text": "进入剧情", "checks": ["出现对话 UI"] },
+      "observed_result": { "text": "出现对话 UI", "checks": ["出现对话 UI"] },
+      "state_status": "observed",
+      "confidence": 0.7,
+      "evidence": [
+        { "kind": "frame", "t_s": 22.0, "path": "data/frames/demo_0022.jpg", "bbox": null, "text": "", "note": "交互后的对话画面" }
+      ],
+      "review": { "status": "pending" },
+      "notes": ""
+    },
+    {
+      "id": "evt_000003",
+      "source_id": "src_demo",
+      "segment_id": "seg_demo_1",
+      "order": 2,
+      "video_time": { "start_s": 24.0, "end_s": 31.0, "precision": "second" },
+      "game_time": null,
+      "sim_time": null,
+      "actor": { "kind": "npc", "name": "派蒙", "confidence": 0.95 },
+      "action": { "type": "dialogue", "params": { "speaker": "派蒙" }, "method": "observed", "notes": "" },
+      "position": {
+        "map": {
+          "x": null,
+          "y": null,
+          "layer": "interior",
+          "region": "纳塔",
+          "anchor": "话事处",
+          "error_m": null,
+          "method": "unknown",
+          "confidence": 0.2
+        },
+        "world": { "x": null, "y": null, "z": null, "error_m": null, "method": "unknown", "confidence": 0.0 }
+      },
+      "preconditions": ["剧情已开始"],
+      "expected_result": { "text": "台词推进", "checks": ["字幕出现"] },
+      "observed_result": { "text": "字幕出现", "checks": ["字幕出现"] },
+      "state_status": "observed",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "kind": "ocr",
+          "t_s": 28.0,
+          "path": "data/frames/demo_0028.jpg",
+          "bbox": [430, 900, 1180, 40],
+          "text": "我们来啦，玛薇卡。哦！希诺宁和茜特菈莉也在，你们好啊。",
+          "note": "对话字幕"
+        }
+      ],
+      "review": { "status": "pending" },
+      "notes": ""
+    }
+  ]
+}
